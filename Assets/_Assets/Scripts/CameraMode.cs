@@ -82,7 +82,7 @@ public class CameraMode : MonoBehaviour
 
     public void ExitCameraView()
     {
-        cameraMode = false;
+        cameraMode = true;
         Debug.Log("Camera View exited!");
         // globalVolume.profile = normalProfile;
         cameraUI.SetActive(false);
