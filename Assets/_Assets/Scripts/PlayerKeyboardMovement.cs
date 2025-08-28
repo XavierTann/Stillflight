@@ -1,23 +1,51 @@
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 [RequireComponent(typeof(CharacterController))]
-public class PlayerMovement : MonoBehaviour
+public class PlayerKeyboardMovement : MonoBehaviour
 {
     public float speed = 2.0f;
     public float gravity = -9.81f;
+
     private CharacterController controller;
     private Vector3 velocity;
+
+    // Input variables
+    private Vector2 moveInput;
+    private PlayerControls controls;
+
+    void Awake()
+    {
+        controls = new PlayerControls();
+    }
+
+    void OnEnable()
+    {
+        // Enable the controls when the object is enabled
+        controls.Enable();
+    }
+
+    void OnDisable()
+    {
+        // Disable the controls when the object is disabled
+        controls.Disable();
+    }
 
     void Start()
     {
         controller = GetComponent<CharacterController>();
+
+        // Bind the input actions
+        controls.Player.Move.performed += ctx => moveInput = ctx.ReadValue<Vector2>();
+        controls.Player.Move.canceled += ctx => moveInput = Vector2.zero;
     }
 
     void Update()
     {
-        // Get WASD / Arrow keys input
-        float x = Input.GetAxis("Horizontal"); // A/D or Left/Right
-        float z = Input.GetAxis("Vertical"); // W/S or Up/Down
+        // Get the movement input (WASD / Arrow keys)
+        float x = moveInput.x;
+        float z = moveInput.y;
+        Debug.Log("Move input x: " + x + ", moveInput.y: " + z);
 
         // Move relative to player orientation
         Vector3 move = transform.right * x + transform.forward * z;
