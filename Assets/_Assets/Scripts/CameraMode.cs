@@ -39,6 +39,12 @@ public class CameraMode : MonoBehaviour
     [SerializeField]
     private GameObject rightLineVisual;
 
+    // Event triggered when the camera mode is activated
+    public event System.Action OnCameraModeActivated;
+
+    // Event triggered when the camera mode is deactivated
+    public event System.Action OnCameraModeDeactivated;
+
     private void Awake()
     {
         // Singleton pattern
@@ -69,6 +75,9 @@ public class CameraMode : MonoBehaviour
 
     public void EnterCameraView()
     {
+        // Trigger the event when camera mode is activated
+        OnCameraModeActivated?.Invoke();
+
         Debug.Log("Camera View entered!");
         cameraMode = true;
         // globalVolume.profile = cameraModeProfile;
@@ -82,7 +91,10 @@ public class CameraMode : MonoBehaviour
 
     public void ExitCameraView()
     {
-        cameraMode = true;
+        // Trigger the event when camera mode is deactivated
+        OnCameraModeDeactivated?.Invoke();
+
+        cameraMode = false;
         Debug.Log("Camera View exited!");
         // globalVolume.profile = normalProfile;
         cameraUI.SetActive(false);

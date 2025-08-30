@@ -45,7 +45,6 @@ public class PlayerKeyboardMovement : MonoBehaviour
         // Get the movement input (WASD / Arrow keys)
         float x = moveInput.x;
         float z = moveInput.y;
-        Debug.Log("Move input x: " + x + ", moveInput.y: " + z);
 
         // Move relative to player orientation
         Vector3 move = transform.right * x + transform.forward * z;
@@ -57,7 +56,7 @@ public class PlayerKeyboardMovement : MonoBehaviour
             velocity.y = -2f;
         }
 
-        velocity.y += gravity * Time.deltaTime;
+        // velocity.y += gravity * Time.deltaTime;
         controller.Move(velocity * Time.deltaTime);
     }
 }

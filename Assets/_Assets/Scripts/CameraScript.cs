@@ -8,14 +8,11 @@ public class CameraScript : MonoBehaviour
     public InputActionReference rightTriggerAction; // Assign in Inspector
 
     [Header("Camera & VFX")]
-    public Camera captureCamera; // Assign your VR main camera (falls back to Camera.main)
-
+    public Camera renderCamera;
     private CameraSnapEffect snapEffect;
 
     private void Awake()
     {
-        if (captureCamera == null)
-            captureCamera = Camera.main;
         if (snapEffect == null)
             snapEffect = FindFirstObjectByType<CameraSnapEffect>();
     }
@@ -40,94 +37,67 @@ public class CameraScript : MonoBehaviour
 
     private void TakePhoto(InputAction.CallbackContext context)
     {
-        // 1) Make sure CameraMode exists
+        // 1) Check camera mode
         if (CameraMode.Instance == null)
         {
             Debug.LogWarning("CameraSnap: No CameraMode.Instance found. Cannot check camera mode.");
             return;
         }
 
-        // 2) Only allow snap if camera mode is ON
         if (!CameraMode.Instance.cameraMode)
         {
             Debug.Log("CameraSnap: Snap ignored — not in camera mode.");
             return;
         }
 
-        // 3) Proceed with snap
-        Debug.Log("Right trigger pressed - taking photo!");
-
+        // 2) Trigger snap effect
         if (snapEffect != null)
         {
             snapEffect.PlaySnap();
             Debug.Log("Camera snap effect played");
         }
-        else
-        {
-            Debug.LogWarning("CameraSnap: No CameraSnapEffect assigned/found.");
-        }
 
+        // 3) Save the RenderTexture
         CaptureScreenshot();
     }
 
-    // void CaptureScreenshot()
-    // {
-    //     Debug.Log("Capturing screenshot...");
-    //     // Get the path to persistent data folder
-    //     string folderPath = Path.Combine(Application.persistentDataPath, "BirdGallery");
-    //     Debug.Log("Screenshot folder path: " + folderPath);
-
-    //     // Create the folder if it doesn't exist
-    //     if (!Directory.Exists(folderPath))
-    //     {
-    //         Directory.CreateDirectory(folderPath);
-    //     }
-
-    //     // Define the screenshot file path (with timestamp)
-    //     string filePath = Path.Combine(
-    //         folderPath,
-    //         "screenshot_" + System.DateTime.Now.ToString("yyyyMMdd_HHmmss") + ".png"
-    //     );
-
-    //     // Capture and save the screenshot
-    //     ScreenCapture.CaptureScreenshot(filePath);
-    //     Debug.Log("Screenshot saved to: " + filePath);
-    // }
-
     void CaptureScreenshot()
     {
-        // Get the path to persistent data folder
-        string folderPath = Path.Combine(Application.persistentDataPath, "BirdGallery");
-
-        // Create the folder if it doesn't exist
-        if (!Directory.Exists(folderPath))
+        if (renderCamera == null || renderCamera.targetTexture == null)
         {
-            Directory.CreateDirectory(folderPath);
+            Debug.LogError("CaptureScreenshot: captureCamera or targetTexture is missing!");
+            return;
         }
 
-        // Define the screenshot file path (with timestamp)
+        RenderTexture rt = renderCamera.targetTexture;
+
+        // Make sure camera renders into the RT before reading it
+        renderCamera.Render();
+
+        // Prepare save path
+        string folderPath = Path.Combine(Application.persistentDataPath, "BirdGallery");
+        if (!Directory.Exists(folderPath))
+            Directory.CreateDirectory(folderPath);
+
         string filePath = Path.Combine(
             folderPath,
-            "croppedScreenshot_" + System.DateTime.Now.ToString("yyyyMMdd_HHmmss") + ".png"
+            "zoomScreenshot_" + System.DateTime.Now.ToString("yyyyMMdd_HHmmss") + ".png"
         );
 
-        // Define the area to capture (left, top, width, height)
-        // These values should be based on the screen coordinates you want to capture
-        int x = 100; // X position (horizontal) of the top-left corner of the area
-        int y = 100; // Y position (vertical) of the top-left corner of the area
-        int width = 500; // Width of the area to capture
-        int height = 300; // Height of the area to capture
+        // Saving previous render texture Unity was working on to restore later.
+        RenderTexture prevActive = RenderTexture.active;
+        RenderTexture.active = rt;
 
-        // Create a Texture2D to store the captured area
-        Texture2D screenShot = new Texture2D(width, height, TextureFormat.RGB24, false);
+        Texture2D tex = new Texture2D(rt.width, rt.height, TextureFormat.RGB24, false);
+        tex.ReadPixels(new Rect(0, 0, rt.width, rt.height), 0, 0);
+        tex.Apply();
 
-        // Capture the pixels within the defined area
-        screenShot.ReadPixels(new Rect(x, y, width, height), 0, 0);
-        screenShot.Apply(); // Apply changes to the texture
+        RenderTexture.active = prevActive;
 
-        // Save the screenshot as a PNG file
-        byte[] bytes = screenShot.EncodeToPNG();
-        File.WriteAllBytes(filePath, bytes);
-        Debug.Log("Screenshot saved to: " + filePath);
+        // Save PNG
+        File.WriteAllBytes(filePath, tex.EncodeToPNG());
+        Debug.Log("ZoomTexture saved to: " + filePath);
+
+        Destroy(tex);
     }
 }

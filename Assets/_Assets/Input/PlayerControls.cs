@@ -181,6 +181,15 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Zoom"",
+                    ""type"": ""Button"",
+                    ""id"": ""77888574-340c-4a14-82b2-3d1328c292c0"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -577,6 +586,17 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""groups"": """",
                     ""action"": ""CameraSnap"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""02f059ca-734e-45bd-9e7e-d5ac8ddb9ef8"",
+                    ""path"": ""<Keyboard>/k"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Zoom"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 }
@@ -1174,6 +1194,7 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
         m_Player_Next = m_Player.FindAction("Next", throwIfNotFound: true);
         m_Player_Sprint = m_Player.FindAction("Sprint", throwIfNotFound: true);
         m_Player_CameraSnap = m_Player.FindAction("CameraSnap", throwIfNotFound: true);
+        m_Player_Zoom = m_Player.FindAction("Zoom", throwIfNotFound: true);
         // UI
         m_UI = asset.FindActionMap("UI", throwIfNotFound: true);
         m_UI_Navigate = m_UI.FindAction("Navigate", throwIfNotFound: true);
@@ -1277,6 +1298,7 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
     private readonly InputAction m_Player_Next;
     private readonly InputAction m_Player_Sprint;
     private readonly InputAction m_Player_CameraSnap;
+    private readonly InputAction m_Player_Zoom;
     /// <summary>
     /// Provides access to input actions defined in input action map "Player".
     /// </summary>
@@ -1328,6 +1350,10 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
         /// Provides access to the underlying input action "Player/CameraSnap".
         /// </summary>
         public InputAction @CameraSnap => m_Wrapper.m_Player_CameraSnap;
+        /// <summary>
+        /// Provides access to the underlying input action "Player/Zoom".
+        /// </summary>
+        public InputAction @Zoom => m_Wrapper.m_Player_Zoom;
         /// <summary>
         /// Provides access to the underlying input action map instance.
         /// </summary>
@@ -1384,6 +1410,9 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
             @CameraSnap.started += instance.OnCameraSnap;
             @CameraSnap.performed += instance.OnCameraSnap;
             @CameraSnap.canceled += instance.OnCameraSnap;
+            @Zoom.started += instance.OnZoom;
+            @Zoom.performed += instance.OnZoom;
+            @Zoom.canceled += instance.OnZoom;
         }
 
         /// <summary>
@@ -1425,6 +1454,9 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
             @CameraSnap.started -= instance.OnCameraSnap;
             @CameraSnap.performed -= instance.OnCameraSnap;
             @CameraSnap.canceled -= instance.OnCameraSnap;
+            @Zoom.started -= instance.OnZoom;
+            @Zoom.performed -= instance.OnZoom;
+            @Zoom.canceled -= instance.OnZoom;
         }
 
         /// <summary>
@@ -1795,6 +1827,13 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
         /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
         /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
         void OnCameraSnap(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "Zoom" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnZoom(InputAction.CallbackContext context);
     }
     /// <summary>
     /// Interface to implement callback methods for all input action callbacks associated with input actions defined by "UI" which allows adding and removing callbacks.
