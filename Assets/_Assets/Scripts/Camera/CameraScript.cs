@@ -11,10 +11,25 @@ public class CameraScript : MonoBehaviour
     public Camera renderCamera;
     private CameraSnapEffect snapEffect;
 
+    [Header("Raycast")]
+    [Tooltip("How far the photo 'ray' should check for a bird.")]
+    [SerializeField]
+    private float rayDistance = 100f;
+
+    [Tooltip(
+        "LayerMask for birds. Set to the 'Bird' layer in the Inspector (or left empty to auto-resolve)."
+    )]
+    [SerializeField]
+    private LayerMask birdLayerMask;
+
     private void Awake()
     {
         if (snapEffect == null)
             snapEffect = FindFirstObjectByType<CameraSnapEffect>();
+
+        // Auto-resolve the Bird layer if the mask isn't set in the Inspector.
+        if (birdLayerMask.value == 0)
+            birdLayerMask = LayerMask.GetMask("Bird");
     }
 
     private void OnEnable()
@@ -50,6 +65,9 @@ public class CameraScript : MonoBehaviour
             return;
         }
 
+        // 1.5) Raycast in the look direction to check for birds
+        RaycastForBird();
+
         // 2) Trigger snap effect
         if (snapEffect != null)
         {
@@ -59,6 +77,37 @@ public class CameraScript : MonoBehaviour
 
         // 3) Save the RenderTexture
         CaptureScreenshot();
+    }
+
+    /// <summary>
+    /// Casts a ray from the renderCamera forward and logs if it hits the Bird layer.
+    /// </summary>
+    private void RaycastForBird()
+    {
+        if (renderCamera == null)
+        {
+            Debug.LogWarning("RaycastForBird: No renderCamera assigned.");
+            return;
+        }
+
+        Ray ray = new Ray(renderCamera.transform.position, renderCamera.transform.forward);
+
+        // If birdLayerMask is still zero (layer not found), fall back to any hit.
+        if (birdLayerMask.value != 0)
+        {
+            if (Physics.Raycast(ray, out RaycastHit hit, rayDistance, birdLayerMask))
+                Debug.Log("Hit a bird!");
+            else
+                Debug.Log("Hit nothing!");
+        }
+        else
+        {
+            // Optional fallback (not layer-filtered) in case the 'Bird' layer doesn't exist.
+            if (Physics.Raycast(ray, out RaycastHit _, rayDistance))
+                Debug.Log("Hit something (no Bird layer set)!");
+            else
+                Debug.Log("Hit nothing!");
+        }
     }
 
     void CaptureScreenshot()
