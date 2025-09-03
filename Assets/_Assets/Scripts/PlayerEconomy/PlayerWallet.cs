@@ -34,6 +34,7 @@ public class PlayerWallet : MonoBehaviour
     public void AddCredits(int amount)
     {
         balance += amount;
+        Debug.Log("Added " + amount + " credits. New balance: " + balance);
     }
 
     public bool SpendCredits(int amount)

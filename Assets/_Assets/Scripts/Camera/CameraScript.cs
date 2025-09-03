@@ -96,9 +96,21 @@ public class CameraScript : MonoBehaviour
         if (birdLayerMask.value != 0)
         {
             if (Physics.Raycast(ray, out RaycastHit hit, rayDistance, birdLayerMask))
-                Debug.Log("Hit a bird!");
+            {
+                // Works whether the collider is on a child or the root
+                var bird = hit.collider.GetComponentInParent<Bird>();
+                if (bird != null && bird.data != null)
+                {
+                    Debug.Log($"Hit a bird! Type: {bird.data.birdName}");
+                    BirdDatabase.Instance.DiscoverBird(bird.data);
+                }
+                else
+                    Debug.Log("Hit a bird layer object, but no Bird component/data found.");
+            }
             else
+            {
                 Debug.Log("Hit nothing!");
+            }
         }
         else
         {
