@@ -45,6 +45,12 @@ public class CameraMode : MonoBehaviour
     // Event triggered when the camera mode is deactivated
     public event System.Action OnCameraModeDeactivated;
 
+    [SerializeField]
+    private CameraZoom cameraZoom;
+
+    [SerializeField]
+    private CameraScript cameraScript;
+
     private void Awake()
     {
         // Singleton pattern
@@ -60,7 +66,7 @@ public class CameraMode : MonoBehaviour
     }
 
     private void Update()
-    {
+    { // Do I really need to check this every frame?
         float distance = Vector3.Distance(transform.position, xrCamera.position);
 
         if (distance <= activationDistance && !cameraMode)
@@ -87,6 +93,9 @@ public class CameraMode : MonoBehaviour
         rightControllerVisual.SetActive(false);
         leftLineVisual.SetActive(false);
         rightLineVisual.SetActive(false);
+
+        cameraZoom.enabled = true;
+        cameraScript.enabled = true;
     }
 
     public void ExitCameraView()
@@ -103,5 +112,8 @@ public class CameraMode : MonoBehaviour
         rightControllerVisual.SetActive(true);
         leftLineVisual.SetActive(true);
         rightLineVisual.SetActive(true);
+
+        cameraZoom.enabled = false;
+        cameraScript.enabled = false;
     }
 }

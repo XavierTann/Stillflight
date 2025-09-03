@@ -3,7 +3,7 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 
 public class CameraScript : MonoBehaviour
-{
+{ // Taking Photo logic and raycast for birds.
     [Header("Input")]
     public InputActionReference rightTriggerAction; // Assign in Inspector
 

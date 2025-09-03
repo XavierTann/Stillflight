@@ -4,6 +4,9 @@ using UnityEngine.XR;
 
 public class CameraZoom : MonoBehaviour
 {
+    // CAMERA MODE DISABLES AND ENABLES THIS SCRIPT, SO
+    // NO NEED TO CHECK FOR CAMERA MODE IN UPDATE
+
     [Header("References")]
     public Camera mainCam; // Reference to main camera
     public Camera secondaryCam; // Secondary camera to control
@@ -65,7 +68,6 @@ public class CameraZoom : MonoBehaviour
     // Event handler for zooming out
     private void OnZoomOut(InputAction.CallbackContext context)
     {
-        Debug.Log("Zooming Out Pressed");
         isZoomingIn = false;
         isZoomingOut = true;
     }
@@ -80,14 +82,16 @@ public class CameraZoom : MonoBehaviour
     void Update()
     {
         // Press J to zoom in (increase distance)
-        if (CameraMode.Instance.cameraMode && isZoomingIn)
+        if (isZoomingIn)
         {
+            Debug.Log("Zooming in");
             zoomDistance = Mathf.Clamp(zoomDistance + zoomStep * Time.deltaTime, minZoom, maxZoom);
             // newPosition = mainCam.transform.position + mainCam.transform.forward * zoomDistance;
         }
         // Press K to zoom out (decrease distance)
-        else if (CameraMode.Instance.cameraMode && isZoomingOut)
+        else if (isZoomingOut)
         {
+            Debug.Log("Zooming out");
             zoomDistance = Mathf.Clamp(zoomDistance - zoomStep * Time.deltaTime, minZoom, maxZoom);
         }
     }
