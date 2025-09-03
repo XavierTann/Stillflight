@@ -40,6 +40,14 @@ public class CameraZoom : MonoBehaviour
             zoomIn.action.Enable();
             zoomOut.action.Enable();
         }
+
+        maxZoom = InventorySystem.Instance.GetEquipped()?.maxZoom ?? 2f;
+        Debug.Log(
+            "CameraZoom: Max zoom set to "
+                + maxZoom
+                + " from equipped camera."
+                + InventorySystem.Instance.GetEquipped()?.cameraName
+        );
     }
 
     private void OnDisable()

@@ -18,7 +18,10 @@ public class ShopSystem : MonoBehaviour
 
         Instance = this;
         DontDestroyOnLoad(gameObject); // optional: persists across scenes
+    }
 
+    private void Start()
+    {
         wallet = PlayerWallet.Instance;
     }
 
@@ -37,6 +40,10 @@ public class ShopSystem : MonoBehaviour
         }
 
         Debug.Log("Bought: " + cameraSO.cameraName + " for " + cameraSO.cost + " credits.");
+
+        InventorySystem.Instance.Add(cameraSO);
+        // Autoequip
+        InventorySystem.Instance.Equip(cameraSO);
         return true;
     }
 }

@@ -36,7 +36,7 @@ public class InventorySystem : MonoBehaviour
     }
 
     // --- Mutations ---
-    public bool Grant(CameraSO camera)
+    public bool Add(CameraSO camera)
     {
         if (camera == null)
             return false;

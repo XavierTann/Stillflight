@@ -13,6 +13,6 @@ public class CameraSO : ScriptableObject
     public int cost = 100;
 
     // [Header("Stats (optional for later)")]
-    // public float maxZoom = 2f;
+    public float maxZoom = 2f;
     // public int resolutionMP = 12;
 }
